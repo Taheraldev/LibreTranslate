@@ -11,10 +11,12 @@ RUN apt-get update -qq \
 
 RUN python -mvenv venv && ./venv/bin/pip install --no-cache-dir --upgrade pip
 
+# ✅ تأكد من نسخ ملف VERSION إلى الحاوية
+COPY VERSION /app/VERSION
 COPY . .
 
-# ✅ إصلاح مشكلة ملف VERSION
-RUN echo "1.0.0" > /app/VERSION
+# تأكد أن الملف موجود بعد النسخ
+RUN ls -l /app/VERSION && cat /app/VERSION
 
 # Install package from source code, compile translations
 RUN ./venv/bin/pip install Babel==2.12.1 && ./venv/bin/python scripts/compile_locales.py \
