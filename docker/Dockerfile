@@ -11,9 +11,10 @@ RUN apt-get update -qq \
 
 RUN python -mvenv venv && ./venv/bin/pip install --no-cache-dir --upgrade pip
 
-# 🔹 نسخ جميع الملفات المطلوبة بما فيها VERSION
 COPY . .
-COPY VERSION /app/VERSION  # ✅ إصلاح الخطأ بإضافة هذا السطر
+
+# ✅ إصلاح مشكلة ملف VERSION
+RUN echo "1.0.0" > /app/VERSION
 
 # Install package from source code, compile translations
 RUN ./venv/bin/pip install Babel==2.12.1 && ./venv/bin/python scripts/compile_locales.py \
@@ -36,7 +37,6 @@ WORKDIR /app
 COPY --from=builder --chown=1032:1032 /app/venv/bin/ltmanage /usr/bin/
 
 RUN if [ "$with_models" = "true" ]; then  \
-  # initialize the language models
   if [ ! -z "$models" ]; then \
   ./venv/bin/python scripts/install_models.py --load_only_lang_codes "$models";   \
   else \
